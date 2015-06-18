@@ -9,13 +9,14 @@ class IRCClient(irc.IRCClient):
         self.nickname = nickname
 
     def signedOn(self):
-        self.join(self.factory.channel)
+        for channel in self.factory.channels:
+            self.join(channel)
 
 
 class IRCFactory(protocol.ClientFactory):
-    def __init__(self, channel, nickname, reactor):
-        self.channel = channel
-        self.nickname = nickname
+    def __init__(self, cfg, reactor):
+        self.channels = cfg.channels
+        self.nickname = cfg.user.nickname
         self.reactor = reactor
 
     def buildProtocol(self, addr):

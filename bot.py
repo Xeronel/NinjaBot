@@ -1,11 +1,12 @@
 __author__ = 'ripster'
 
 from twisted.internet import reactor, ssl
-from modules import irc
+from modules import irc, config
 
 
-reactor.connectSSL('irc.ratio.ninja',
-                   6697,
-                   irc.IRCFactory('#rationinja', 'RipBot', reactor),
+conf = config.load_config('config.yaml')
+reactor.connectSSL(conf.irc.network.address,
+                   conf.irc.network.port,
+                   irc.IRCFactory(conf.irc, reactor),
                    ssl.ClientContextFactory())
 reactor.run()
