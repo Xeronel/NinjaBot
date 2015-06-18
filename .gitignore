@@ -1,2 +1,5 @@
 # Ignore PyCharm
 .idea/
+
+# Ignore Config
+config.yaml
