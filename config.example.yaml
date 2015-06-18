@@ -1,6 +1,6 @@
 irc:
-    connection:
-        network: 'irc.ratio.ninja'
+    network:
+        address: 'irc.ratio.ninja'
         port: 6697
         ssl: on
     channels:
