@@ -1,33 +1,49 @@
 __author__ = 'ripster'
 
 from twisted.words.protocols import irc
-from twisted.internet import protocol
+from twisted.internet import protocol, reactor, ssl
 
 
 class IRCClient(irc.IRCClient):
-    def __init__(self, nickname):
+    def __init__(self, nickname, channels):
         self.nickname = nickname
+        self.channels = channels
 
     def signedOn(self):
-        for channel in self.factory.channels:
+        for channel in self.channels:
             self.join(channel)
 
 
 class IRCFactory(protocol.ClientFactory):
-    def __init__(self, cfg, reactor):
-        self.channels = cfg.channels
-        self.nickname = cfg.user.nickname
-        self.reactor = reactor
+    def __init__(self, channels, nickname):
+        self.channels = channels
+        self.nickname = nickname
 
-    def buildProtocol(self, addr):
-        proto = IRCClient(self.nickname)
+    def buildProtocol(self, address):
+        proto = IRCClient(self.nickname, self.channels)
         proto.factory = self
         return proto
 
     def clientConnectionLost(self, connector, reason):
         # Try to reconnect if disconnected.
-        connector.connect()
+        print(reason.getErrorMessage())
+        reactor.stop()
 
     def clientConnectionFailed(self, connector, reason):
-        # There is probably a better way to do this
-        self.reactor.stop()
+        print(reason.getErrorMessage())
+        reactor.stop()
+
+
+def run(cfg):
+    if cfg.irc.network.ssl:
+        reactor.connectSSL(cfg.irc.network.address,
+                           cfg.irc.network.port,
+                           IRCFactory(cfg.irc.channels,
+                                      cfg.irc.user.nickname),
+                           ssl.ClientContextFactory())
+    else:
+        reactor.connectTCP(cfg.irc.network.address,
+                           cfg.irc.network.port,
+                           IRCFactory(cfg.irc.channels,
+                                      cfg.irc.user.nickname))
+    reactor.run()
