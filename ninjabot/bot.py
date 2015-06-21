@@ -41,17 +41,17 @@ class IRCFactory(protocol.ClientFactory):
 
 
 def run():
-    irc = config.irc.load('config.yaml')
+    irc_cfg = config.irc.load('config.yaml')
 
-    if irc.network.ssl:
-        reactor.connectSSL(irc.network.address,
-                           irc.network.port,
-                           IRCFactory(irc.channels,
-                                      irc.user.nickname),
+    if irc_cfg.network.ssl:
+        reactor.connectSSL(irc_cfg.network.address,
+                           irc_cfg.network.port,
+                           IRCFactory(irc_cfg.channels,
+                                      irc_cfg.user.nickname),
                            ssl.ClientContextFactory())
     else:
-        reactor.connectTCP(irc.irc.network.address,
-                           irc.irc.network.port,
-                           IRCFactory(irc.channels,
-                                      irc.user.nickname))
+        reactor.connectTCP(irc_cfg.irc.network.address,
+                           irc_cfg.irc.network.port,
+                           IRCFactory(irc_cfg.channels,
+                                      irc_cfg.user.nickname))
     reactor.run()
