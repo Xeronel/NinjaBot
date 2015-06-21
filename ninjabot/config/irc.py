@@ -2,6 +2,7 @@ __author__ = 'ripster'
 
 import yaml
 from collections import namedtuple
+from errors import ConfigError
 
 
 def load(file_name):
@@ -13,49 +14,22 @@ def load(file_name):
 
 class Config:
     def __init__(self, cfg):
-        self.__validate_config(cfg)
-        self.__irc_cfg = IrcConfig(cfg['irc'])
-
-    @property
-    def irc(self):
-            return self.__irc_cfg
-
-    @staticmethod
-    def __validate_config(conf):
-        # Proper config structure
-        sections = {'irc':
-                        {'network': {'address': str,
-                                     'port': int,
-                                     'ssl': bool},
-                         'channels': list,
-                         'user': {'nickname': str,
-                                  'realname': str,
-                                  'password': str,
-                                  'operpass': str},
-                         'auth': {'oper': bool,
-                                  'nicksrv': bool, 'opersrv': bool}
+        self.sections = {'irc':
+                            {'network': {'address': str,
+                                         'port': int,
+                                         'ssl': bool},
+                             'channels': list,
+                             'user': {'nickname': str,
+                                      'realname': str,
+                                      'password': str,
+                                      'operpass': str},
+                             'auth': {'oper': bool,
+                                      'nicksrv': bool,
+                                      'opersrv': bool}
+                             }
                          }
-                    }
-        # Validate config
-        for section in sections:
-            if section not in conf:
-                raise ConfigError("Section '%s' is missing in config." % section)
-
-            for subsection in sections[section]:
-                if subsection not in conf[section]:
-                    raise ConfigError("Section '%s' is missing in config." % subsection)
-
-                if isinstance(sections[section][subsection], dict):
-                    for parameter in sections[section][subsection]:
-                        if parameter not in conf[section][subsection]:
-                            raise ConfigError("Parameter '%s' is missing in config." % parameter)
-                elif not isinstance(conf[section][subsection], sections[section][subsection]):
-                    raise TypeError('%s is not the correct type.' % subsection)
-
-
-class IrcConfig:
-    def __init__(self, cfg):
-        self.__cfg = cfg
+        self.__validate_config(cfg)
+        self.__cfg = cfg['irc']
 
     @property
     def network(self):
@@ -85,11 +59,23 @@ class IrcConfig:
     def auth(self):
         auth = namedtuple('auth', ['oper', 'nicksrv', 'opersrv'])
         auth.oper = self.__cfg['auth']['oper']
-        auth.nicksrv = self.cfg['auth']['nicksrv']
-        auth.opersrv = self.cfg['auth']['opersrv']
+        auth.nicksrv = self.__cfg['auth']['nicksrv']
+        auth.opersrv = self.__cfg['auth']['opersrv']
         return auth
 
+    def __validate_config(self, cfg):
+        # Validate config
+        for section in self.sections:
+            if section not in cfg:
+                raise ConfigError("Section '%s' is missing in config." % section)
 
-class ConfigError(Exception):
-    def __init__(self, message):
-        super(Exception, self).__init__(message)
+            for subsection in self.sections[section]:
+                if subsection not in cfg[section]:
+                    raise ConfigError("Section '%s' is missing in config." % subsection)
+
+                if isinstance(self.sections[section][subsection], dict):
+                    for parameter in self.sections[section][subsection]:
+                        if parameter not in cfg[section][subsection]:
+                            raise ConfigError("Parameter '%s' is missing in config." % parameter)
+                elif not isinstance(cfg[section][subsection], self.sections[section][subsection]):
+                    raise TypeError('%s is not the correct type.' % subsection)

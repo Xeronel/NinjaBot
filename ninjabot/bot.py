@@ -2,6 +2,7 @@ __author__ = 'ripster'
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
+import config
 
 
 class IRCClient(irc.IRCClient):
@@ -39,16 +40,18 @@ class IRCFactory(protocol.ClientFactory):
         reactor.stop()
 
 
-def run(cfg):
-    if cfg.irc.network.ssl:
-        reactor.connectSSL(cfg.irc.network.address,
-                           cfg.irc.network.port,
-                           IRCFactory(cfg.irc.channels,
-                                      cfg.irc.user.nickname),
+def run():
+    irc = config.irc.load('config.yaml')
+
+    if irc.network.ssl:
+        reactor.connectSSL(irc.network.address,
+                           irc.network.port,
+                           IRCFactory(irc.channels,
+                                      irc.user.nickname),
                            ssl.ClientContextFactory())
     else:
-        reactor.connectTCP(cfg.irc.network.address,
-                           cfg.irc.network.port,
-                           IRCFactory(cfg.irc.channels,
-                                      cfg.irc.user.nickname))
+        reactor.connectTCP(irc.irc.network.address,
+                           irc.irc.network.port,
+                           IRCFactory(irc.channels,
+                                      irc.user.nickname))
     reactor.run()
