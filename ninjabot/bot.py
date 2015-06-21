@@ -13,6 +13,11 @@ class IRCClient(irc.IRCClient):
         for channel in self.channels:
             self.join(channel)
 
+    def privmsg(self, user, channel, message):
+        if user.startswith('Ripster!') and message == '!stop':
+            print('%s issued stop command.' % user.split('!')[0])
+            self.quit()
+
 
 class IRCFactory(protocol.ClientFactory):
     def __init__(self, channels, nickname):

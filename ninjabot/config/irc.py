@@ -4,11 +4,12 @@ import yaml
 from collections import namedtuple
 
 
-def load_config(file_name):
+def load(file_name):
     with open(file_name, 'r') as f:
         conf = yaml.load(f.read())
 
     return Config(conf)
+
 
 class Config:
     def __init__(self, cfg):
