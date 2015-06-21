@@ -1,8 +1,0 @@
-# Ignore PyCharm
-.idea/
-
-# Ignore Config
-config.yaml
-
-# Ingore compiled python files
-*.pyc
