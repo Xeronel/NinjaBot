@@ -1,0 +1,17 @@
+irc:
+    network:
+        address: 'irc.ratio.ninja'
+        port: 6697
+        ssl: on
+    channels:
+        - '#Channel1'
+        - '#Channel2'
+    user:
+        nickname: 'Bot'
+        realname: 'Bot'
+        operpass: 'MyOperPass'
+        password: 'MyNickSrvPass'
+    auth:
+        oper: on
+        nicksrv: on
+        opersrv: on
