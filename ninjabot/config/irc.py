@@ -1,45 +1,24 @@
 __author__ = 'ripster'
 
-import yaml
 from collections import namedtuple
-from errors import ConfigError
+from config import ConfigError, BaseConfig
 
 
-def load(file_name):
-    with open(file_name, 'r') as f:
-        conf = yaml.load(f.read())
-
-    return Config(conf)
-
-
-class Config:
-    def __init__(self, cfg):
-        self.sections = {'network': {'address': str,
-                                     'port': int,
-                                     'ssl': bool},
-                         'channels': list,
-                         'user': {'nickname': str,
-                                  'realname': str,
-                                  'password': str,
-                                  'operpass': str},
-                         'auth': {'oper': bool,
-                                  'nicksrv': bool,
-                                  'opersrv': bool}
-                         }
-        self.__validate_config(cfg)
-        self.__cfg = cfg
+class Config(BaseConfig):
+    def __init__(self):
+        BaseConfig.__init__(self, 'config.yaml', validate_config)
 
     @property
     def network(self):
         c = namedtuple('network', ['address', 'port', 'ssl'])
-        c.address = self.__cfg['network']['address']
-        c.port = self.__cfg['network']['port']
-        c.ssl = self.__cfg['network']['ssl']
+        c.address = self.cfg_dict['network']['address']
+        c.port = self.cfg_dict['network']['port']
+        c.ssl = self.cfg_dict['network']['ssl']
         return c
 
     @property
     def channels(self):
-        return self.__cfg['channels']
+        return self.cfg_dict['channels']
 
     @property
     def user(self):
@@ -47,35 +26,49 @@ class Config:
                                    'realname',
                                    'operpass',
                                    'password'])
-        user.nickname = self.__cfg['user']['nickname']
-        user.realname = self.__cfg['user']['realname']
-        user.operpass = self.__cfg['user']['operpass']
-        user.password = self.__cfg['user']['password']
+        user.nickname = self.cfg_dict['user']['nickname']
+        user.realname = self.cfg_dict['user']['realname']
+        user.operpass = self.cfg_dict['user']['operpass']
+        user.password = self.cfg_dict['user']['password']
         return user
 
     @property
     def auth(self):
         auth = namedtuple('auth', ['oper', 'nicksrv', 'opersrv'])
-        auth.oper = self.__cfg['auth']['oper']
-        auth.nicksrv = self.__cfg['auth']['nicksrv']
-        auth.opersrv = self.__cfg['auth']['opersrv']
+        auth.oper = self.cfg_dict['auth']['oper']
+        auth.nicksrv = self.cfg_dict['auth']['nicksrv']
+        auth.opersrv = self.cfg_dict['auth']['opersrv']
         return auth
 
-    def __validate_config(self, cfg):
-        for section in self.sections:
-            # Make sure the section is in the config
-            if section not in cfg:
-                raise ConfigError("Section '%s' is missing in config." % section)
 
-            if isinstance(self.sections[section], dict):
-                for parameter in self.sections[section]:
-                    # Make sure the parameters are all there
-                    if parameter not in cfg[section]:
-                        raise ConfigError("Parameter '%s' is missing in config." % parameter)
+def validate_config(cfg):
+    sections = {'network': {'address': str,
+                            'port': int,
+                            'ssl': bool},
+                'channels': list,
+                'user': {'nickname': str,
+                         'realname': str,
+                         'password': str,
+                         'operpass': str},
+                'auth': {'oper': bool,
+                         'nicksrv': bool,
+                         'opersrv': bool}
+                }
 
-                    # Make sure the parameters are the correct data type
-                    if not isinstance(cfg[section][parameter], self.sections[section][parameter]):
-                        raise TypeError('%s contains invalid data.' % parameter)
+    for section in sections:
+        # Make sure the section is in the config
+        if section not in cfg:
+            raise ConfigError("Section '%s' is missing in config." % section)
 
-            elif not isinstance(cfg[section], self.sections[section]):
-                raise TypeError('%s contains invalid data.' % section)
+        if isinstance(sections[section], dict):
+            for parameter in sections[section]:
+                # Make sure the parameters are all there
+                if parameter not in cfg[section]:
+                    raise ConfigError("Parameter '%s' is missing in config." % parameter)
+
+                # Make sure the parameters are the correct data type
+                if not isinstance(cfg[section][parameter], sections[section][parameter]):
+                    raise TypeError('%s contains invalid data.' % parameter)
+
+        elif not isinstance(cfg[section], sections[section]):
+            raise TypeError('%s contains invalid data.' % section)
