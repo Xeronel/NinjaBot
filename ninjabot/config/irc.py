@@ -14,22 +14,20 @@ def load(file_name):
 
 class Config:
     def __init__(self, cfg):
-        self.sections = {'irc':
-                            {'network': {'address': str,
-                                         'port': int,
-                                         'ssl': bool},
-                             'channels': list,
-                             'user': {'nickname': str,
-                                      'realname': str,
-                                      'password': str,
-                                      'operpass': str},
-                             'auth': {'oper': bool,
-                                      'nicksrv': bool,
-                                      'opersrv': bool}
-                             }
+        self.sections = {'network': {'address': str,
+                                     'port': int,
+                                     'ssl': bool},
+                         'channels': list,
+                         'user': {'nickname': str,
+                                  'realname': str,
+                                  'password': str,
+                                  'operpass': str},
+                         'auth': {'oper': bool,
+                                  'nicksrv': bool,
+                                  'opersrv': bool}
                          }
         self.__validate_config(cfg)
-        self.__cfg = cfg['irc']
+        self.__cfg = cfg
 
     @property
     def network(self):
@@ -64,18 +62,20 @@ class Config:
         return auth
 
     def __validate_config(self, cfg):
-        # Validate config
         for section in self.sections:
+            # Make sure the section is in the config
             if section not in cfg:
                 raise ConfigError("Section '%s' is missing in config." % section)
 
-            for subsection in self.sections[section]:
-                if subsection not in cfg[section]:
-                    raise ConfigError("Section '%s' is missing in config." % subsection)
+            if isinstance(self.sections[section], dict):
+                for parameter in self.sections[section]:
+                    # Make sure the parameters are all there
+                    if parameter not in cfg[section]:
+                        raise ConfigError("Parameter '%s' is missing in config." % parameter)
 
-                if isinstance(self.sections[section][subsection], dict):
-                    for parameter in self.sections[section][subsection]:
-                        if parameter not in cfg[section][subsection]:
-                            raise ConfigError("Parameter '%s' is missing in config." % parameter)
-                elif not isinstance(cfg[section][subsection], self.sections[section][subsection]):
-                    raise TypeError('%s is not the correct type.' % subsection)
+                    # Make sure the parameters are the correct data type
+                    if not isinstance(cfg[section][parameter], self.sections[section][parameter]):
+                        raise TypeError('%s contains invalid data.' % parameter)
+
+            elif not isinstance(cfg[section], self.sections[section]):
+                raise TypeError('%s contains invalid data.' % section)
