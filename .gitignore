@@ -3,6 +3,7 @@
 
 # Ignore Config
 config.yaml
+groups.yaml
 
 # Ingore compiled python files
 *.pyc
