@@ -1,3 +1,3 @@
 __author__ = 'ripster'
 
-from irc import load
+from irc import Config as Irc

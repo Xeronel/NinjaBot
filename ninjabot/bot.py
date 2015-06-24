@@ -41,8 +41,7 @@ class IRCFactory(protocol.ClientFactory):
 
 
 def run():
-    irc_cfg = config.irc.load('config.yaml')
-
+    irc_cfg = config.Irc()
     if irc_cfg.network.ssl:
         reactor.connectSSL(irc_cfg.network.address,
                            irc_cfg.network.port,
