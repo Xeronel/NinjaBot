@@ -6,7 +6,19 @@ from config import ConfigError, BaseConfig
 
 class Config(BaseConfig):
     def __init__(self):
-        BaseConfig.__init__(self, 'config.yaml', validate_config)
+        sections = {'network': {'address': str,
+                                'port': int,
+                                'ssl': bool},
+                    'channels': list,
+                    'user': {'nickname': str,
+                             'realname': str,
+                             'password': str,
+                             'operpass': str},
+                    'auth': {'oper': bool,
+                             'nicksrv': bool,
+                             'opersrv': bool}
+                    }
+        BaseConfig.__init__(self, 'config.yaml', validate_config, sections)
 
     @property
     def network(self):
@@ -41,20 +53,7 @@ class Config(BaseConfig):
         return auth
 
 
-def validate_config(cfg):
-    sections = {'network': {'address': str,
-                            'port': int,
-                            'ssl': bool},
-                'channels': list,
-                'user': {'nickname': str,
-                         'realname': str,
-                         'password': str,
-                         'operpass': str},
-                'auth': {'oper': bool,
-                         'nicksrv': bool,
-                         'opersrv': bool}
-                }
-
+def validate_config(sections, cfg):
     for section in sections:
         # Make sure the section is in the config
         if section not in cfg:

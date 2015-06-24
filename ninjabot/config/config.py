@@ -8,10 +8,10 @@ class ConfigError(Exception):
 
 
 class BaseConfig:
-    def __init__(self, file_name, validation_method):
+    def __init__(self, file_name, validation_method, skeleton):
         self.file_name = file_name
         self.cfg_dict = self.__load()
-        validation_method(self.cfg_dict)
+        validation_method(self.cfg_dict, skeleton)
 
     def __load(self):
         with open(self.file_name, 'r') as f:
