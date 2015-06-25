@@ -18,7 +18,7 @@ class Config(BaseConfig):
                              'nicksrv': bool,
                              'opersrv': bool}
                     }
-        BaseConfig.__init__(self, 'config.yaml', skeleton)
+        BaseConfig.__init__(self, 'config.yaml', skeleton, validate_config)
 
     @property
     def network(self):
@@ -51,3 +51,23 @@ class Config(BaseConfig):
         auth.nicksrv = self.cfg_dict['auth']['nicksrv']
         auth.opersrv = self.cfg_dict['auth']['opersrv']
         return auth
+
+
+def validate_config(cfg, sections):
+    for section in sections:
+        # Make sure the section is in the config
+        if section not in cfg:
+            raise ConfigError("Section '%s' is missing in config." % section)
+
+        if isinstance(sections[section], dict):
+            for parameter in sections[section]:
+                # Make sure the parameters are all there
+                if parameter not in cfg[section]:
+                    raise ConfigError("Parameter '%s' is missing in config." % parameter)
+
+                # Make sure the parameters are the correct data type
+                if not isinstance(cfg[section][parameter], sections[section][parameter]):
+                    raise TypeError('%s contains invalid data.' % parameter)
+
+        elif not isinstance(cfg[section], sections[section]):
+            raise TypeError('%s contains invalid data.' % section)
