@@ -53,6 +53,10 @@ class Config(BaseConfig):
         auth.opersrv = self.cfg_dict['auth']['opersrv']
         return auth
 
+    @property
+    def modes(self):
+        return self.cfg_dict['modes']
+
 
 def validate_config(cfg, sections):
     for section in sections:
