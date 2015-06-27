@@ -17,9 +17,9 @@ def run_command(user, channel, message):
 
     if is_cmd:
         try:
-            result = commands[cmd].execute(user, channel)
-        except:
-            result = 'Some error occured.'
+            result = commands[cmd].execute(user, channel, message)
+        except Exception as e:
+            result = 'PRIVMSG %s :Error running %s command (%s)' % (channel, cmd, e.message)
     else:
         result = 'That is not a command!'
 
