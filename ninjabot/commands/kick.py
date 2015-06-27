@@ -16,5 +16,6 @@ class Kick(BaseCommand):
         # Groups allowed to run the command
         self.allow = ['admin']
 
-    def execute(self):
-        pass
+    def execute(self, user, channel, args):
+        return 'PRIVMSG %s :%s' % (channel, 'Uhh..')
+
