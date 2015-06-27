@@ -20,9 +20,6 @@ class IRCClient(irc.IRCClient):
         self.getUserModes('#' + channel)
 
     def privmsg(self, user, channel, message):
-        print('User: %s' % user)
-        print('Channel: %s' % channel)
-        print('Message: %s' % message)
         if user.startswith('Ripster!') and message == '!stop':
             print('%s issued stop command.' % user.split('!')[0])
             self.quit()
