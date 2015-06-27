@@ -6,13 +6,21 @@ from help import Help
 help = Help()
 kick = Kick()
 
-commands = [kick, help]
-triggers = [kick.trigger, help.trigger]
+commands = {kick.trigger: kick,
+            help.trigger: help}
 
 
-def run_command(msg):
-    msg = msg.partition(' ')[0]
-    cmd = msg[0]
-    args = msg[1:]
-    print(cmd, args)
+def run_command(user, channel, message):
+    msg = message.split(' ')
+    cmd = msg[0][1:]
+    is_cmd = True if cmd in commands else False
 
+    if is_cmd:
+        try:
+            result = commands[cmd].execute(user, channel)
+        except:
+            result = 'Some error occured.'
+    else:
+        result = 'That is not a command!'
+
+    return result
