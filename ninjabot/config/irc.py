@@ -16,7 +16,8 @@ class Config(BaseConfig):
                              'operpass': str},
                     'auth': {'oper': bool,
                              'nicksrv': bool,
-                             'opersrv': bool}
+                             'opersrv': bool},
+                    'modes': list
                     }
         BaseConfig.__init__(self, 'config.yaml', skeleton, validate_config)
 
