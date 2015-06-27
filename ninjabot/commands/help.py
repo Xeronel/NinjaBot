@@ -14,7 +14,7 @@ class Help(Command):
         # Example of how to use the command
         self.usage = 'help <user>'
         # Groups allowed to run the command
-        self.allow = ['all']
+        self.allow = ['*']
 
     def execute(self):
         pass
