@@ -16,5 +16,5 @@ class Command(object):
         pass
 
 
-def permissions(command):
+def processor(command):
     pass
