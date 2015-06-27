@@ -14,3 +14,9 @@ auth:
     oper: on
     nicksrv: on
     opersrv: on
+modes:
+    - '~'
+    - '&'
+    - '@'
+    - '%'
+    - '+'
