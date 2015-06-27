@@ -11,5 +11,5 @@ class BaseCommand(object):
         # Groups allowed to run the command
         self.allow = []
 
-    def execute(self, user, channel):
+    def execute(self, user, channel, args):
         pass
