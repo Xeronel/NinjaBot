@@ -1,20 +1,15 @@
 __author__ = 'ripster'
 
-from commands import BaseCommand
-
-
-class Help(BaseCommand):
+class BaseCommand(object):
     def __init__(self):
-        BaseCommand.__init__(self)
-
         # Word that causes the command to run
-        self.trigger = 'help'
+        self.trigger = ''
         # Command description
-        self.help = 'Join the #help channel'
+        self.help = ''
         # Example of how to use the command
-        self.usage = 'help <user>'
+        self.usage = ''
         # Groups allowed to run the command
-        self.allow = ['*']
+        self.allow = []
 
     def execute(self):
         pass

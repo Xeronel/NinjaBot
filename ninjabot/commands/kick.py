@@ -1,11 +1,11 @@
 __author__ = 'ripster'
 
-from command import Command
+from commands import BaseCommand
 
 
-class Kick(Command):
+class Kick(BaseCommand):
     def __init__(self):
-        Command.__init__(self)
+        BaseCommand.__init__(self)
 
         # Word that causes the command to run
         self.trigger = 'kick'
