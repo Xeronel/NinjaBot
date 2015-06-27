@@ -22,7 +22,7 @@ class IRCClient(irc.IRCClient):
 
     def privmsg(self, user, channel, message):
         if message.startswith('!'):
-            run_command(message)
+            self.sendLine(run_command(user, channel, message))
 
         if user.startswith('Ripster!') and message == '!stop':
             print('%s issued stop command.' % user.split('!')[0])
