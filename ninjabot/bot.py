@@ -7,68 +7,105 @@ import config
 
 
 class IRCClient(irc.IRCClient):
-    def __init__(self, nickname, channels, modes):
-        self.nickname = nickname
-        self.channels = channels
-        self.supp_modes = modes  # Modes supported by the IRC server
+    def __init__(self, cfg):
+        self.nickname = cfg.user.nickname
+        self.operpass = cfg.user.operpass
+        if cfg.auth.nicksrv:
+            self.password = cfg.user.password
+        self.channels = cfg.channels
+        self.supp_modes = cfg.modes  # Modes supported by the IRC server
         self.users = {}  # User dict organized by channel and mode
+        self.cfg = cfg
 
     def signedOn(self):
+        # Join channels
         for channel in self.channels:
             self.join(channel)
 
-    def joined(self, channel):
-        self.getUserModes('#' + channel)
+        # Login as oper
+        if self.cfg.auth.opersrv and self.operpass != '':
+            self.sendLine('oper bot %s' % self.operpass)
 
-    def privmsg(self, user, channel, message):
-        if message.startswith('!reload'):
-            cmd.reload_cmds()
-            reload(cmd)
+        # Auth with OperSrv
+        if self.cfg.auth.oper and self.operpass != '':
+            # Login with operserv
+            self.msg('opersrv', 'login %s' % self.operpass)
 
-        if message.startswith('!'):
-            self.sendLine(cmd.run_command(user, channel, message))
+    def userJoined(self, user, channel):
+        print('%s joined channel %s' % (user, channel))
+        self.getUserModes(channel)
 
-        if user.startswith('Ripster!') and message == '!stop':
-            print('%s issued stop command.' % user.split('!')[0])
-            self.quit()
+    def userLeft(self, user, channel):
+        print('%s left %s' % channel)
+        del(self.users[user][channel])
 
     def modeChanged(self, user, channel, set, modes, args):
-        print('Mode set %s %s applied to %s in channel %s' % (set, modes, user, channel))
+        self.getUserModes(channel)
+
+    def privmsg(self, user, channel, message):
+        user, mode = self.parse_user(user, channel)
+
+        if message.startswith('!'):
+            result = cmd.run_command(irc=self,
+                                     user=user,
+                                     mode=mode,
+                                     channel=channel,
+                                     message=message)
+
+            if result is None:
+                if mode in ['~', '&']:
+                    if message == '!stop':
+                        print('%s issued stop command.' % user.split('!')[0])
+                        self.quit()
+                    elif message == '!reload':
+                        cmd.reload_cmds()
+                        reload(cmd)
+            else:
+                self.sendLine(result)
+
+    def parse_user(self, user, channel):
+        user = user.partition('!')[0]
+        if user not in self.users:
+            self.getUserModes(channel)
+        mode = self.users[user][channel]
+        return user, mode
+
+    def noticed(self, user, channel, message):
+        print(user, channel, message)
+
+    def getUserModes(self, channel):
+        # Triggers irc_RPL_NAMREPLY
+        print('Geting names for %s' % channel)
+        self.sendLine('names %s' % channel)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channel = params[2]
         user_list = params[3].strip().split(' ')
 
-        if channel not in self.users:
-            self.users[channel] = {}
-
-        if '*' not in self.users[channel]:
-            self.users[channel]['*'] = []
-
         for user in user_list:
+            # Extract the users mode
             mode = user[0]
-
             if mode in self.supp_modes:
-                if mode not in self.users:
-                    self.users[channel][mode] = []
-                self.users[channel][mode].append(user[1:])
+                user = user[1:]
             else:
-                self.users[channel]['*'].append(user)
+                mode = '*'
+
+            # Make sure the user is in the dictionary
+            if user not in self.users:
+                self.users[user] = {}
+
+            # Set the channel mode
+            self.users[user][channel] = mode
 
         print(self.users)
 
-    def getUserModes(self, channel):
-        self.sendLine('names #%s' % channel)
-
 
 class IRCFactory(protocol.ClientFactory):
-    def __init__(self, nickname, channels, modes):
-        self.nickname = nickname
-        self.channels = channels
-        self.modes = modes
+    def __init__(self, cfg):
+        self.cfg = cfg
 
     def buildProtocol(self, address):
-        proto = IRCClient(self.nickname, self.channels, self.modes)
+        proto = IRCClient(self.cfg)
         proto.factory = self
         return proto
 
@@ -87,14 +124,10 @@ def run():
     if irc_cfg.network.ssl:
         reactor.connectSSL(irc_cfg.network.address,
                            irc_cfg.network.port,
-                           IRCFactory(irc_cfg.user.nickname,
-                                      irc_cfg.channels,
-                                      irc_cfg.modes),
+                           IRCFactory(irc_cfg),
                            ssl.ClientContextFactory())
     else:
-        reactor.connectTCP(irc_cfg.irc.network.address,
-                           irc_cfg.irc.network.port,
-                           IRCFactory(irc_cfg.user.nickname,
-                                      irc_cfg.channels,
-                                      irc_cfg.modes))
+        reactor.connectTCP(irc_cfg.network.address,
+                           irc_cfg.network.port,
+                           IRCFactory(irc_cfg))
     reactor.run()

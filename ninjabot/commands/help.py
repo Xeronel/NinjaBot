@@ -16,5 +16,14 @@ class Help(BaseCommand):
         # Groups allowed to run the command
         self.allow = ['*']
 
-    def execute(self, user, channel, args):
-        return 'PRIVMSG %s :%s' % (channel, 'Fuck off!')
+    def execute(self, irc, user, mode, channel, args):
+        if mode == '~' and len(args) == 2:
+            result = self.move(args[1])
+        else:
+            result = self.move(user)
+
+        return result
+
+    @staticmethod
+    def move(user):
+        return 'sajoin %s %s' % (user, '#help')

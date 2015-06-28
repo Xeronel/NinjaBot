@@ -13,6 +13,7 @@ class Config(BaseConfig):
                     'user': {'nickname': str,
                              'realname': str,
                              'password': str,
+                             'opername': str,
                              'operpass': str},
                     'auth': {'oper': bool,
                              'nicksrv': bool,
@@ -38,9 +39,11 @@ class Config(BaseConfig):
         user = namedtuple('user', ['nickname',
                                    'realname',
                                    'operpass',
+                                   'opername',
                                    'password'])
         user.nickname = self.cfg_dict['user']['nickname']
         user.realname = self.cfg_dict['user']['realname']
+        self.opername = self.cfg_dict['user']['opername']
         user.operpass = self.cfg_dict['user']['operpass']
         user.password = self.cfg_dict['user']['password']
         return user

@@ -11,5 +11,21 @@ class BaseCommand(object):
         # Groups allowed to run the command
         self.allow = []
 
-    def execute(self, user, channel, args):
+    def execute(self, irc, user, mode, channel, args):
         pass
+
+    def is_allowed(self, mode):
+        if '*' in self.allow:
+            return True
+        elif mode in self.allow:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def message(channel, message):
+        return 'PRIVMSG %s :%s' % (channel, message)
+
+    @staticmethod
+    def denied(channel):
+        return 'PRIVMSG %s :%s' % (channel, 'You are not allowed to run that command.')

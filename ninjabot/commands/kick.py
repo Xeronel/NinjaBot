@@ -14,8 +14,35 @@ class Kick(BaseCommand):
         # Example of how to use the command
         self.usage = 'kick <user> <reason>'
         # Groups allowed to run the command
-        self.allow = ['*']
+        self.allow = ['~', '&', '@']
 
-    def execute(self, user, channel, args):
-        return 'PRIVMSG %s :%s' % (channel, 'Uhh..')
+    def execute(self, irc, user, mode, channel, args):
+        try:
+            target = args[1]
+        except IndexError:
+            target = ''
 
+        if target == irc.nickname:
+            return self.message(channel, 'Fuck off!')
+
+        if self.is_allowed(mode):
+            if len(args) == 2:
+                return self.kick(channel, target)
+            elif len(args) > 2:
+                return self.kick(channel, target, ' '.join(args[2:]))
+            else:
+                return self.message(channel, 'Usage is "%s"' % self.usage)
+        else:
+            return self.denied(channel)
+
+    def protected(self):
+        protected = ['~', '&']
+        if mode not in protected and irc.users[target][channel] in protected:
+            return self.kick(channel, user, 'Nice try')
+
+    @staticmethod
+    def kick(channel, user, reason=''):
+        if reason != '':
+            return 'KICK %s %s %s' % (channel, user, reason)
+        else:
+            return 'KICK %s %s' % (channel, user)
