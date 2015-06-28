@@ -2,7 +2,7 @@ __author__ = 'ripster'
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
-from commands import run_command
+import commands as cmd
 import config
 
 
@@ -21,8 +21,12 @@ class IRCClient(irc.IRCClient):
         self.getUserModes('#' + channel)
 
     def privmsg(self, user, channel, message):
+        if message.startswith('!reload'):
+            cmd.reload_cmds()
+            reload(cmd)
+
         if message.startswith('!'):
-            self.sendLine(run_command(user, channel, message))
+            self.sendLine(cmd.run_command(user, channel, message))
 
         if user.startswith('Ripster!') and message == '!stop':
             print('%s issued stop command.' % user.split('!')[0])

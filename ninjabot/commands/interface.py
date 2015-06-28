@@ -1,14 +1,18 @@
 __author__ = 'ripster'
 
-from kick import Kick
-from help import Help
+import kick
+import help
 
-help = Help()
-kick = Kick()
 
-commands = {kick.trigger: kick,
-            help.trigger: help}
+Kick = kick.Kick()
+Help = help.Help()
 
+commands = {Kick.trigger: Kick,
+            Help.trigger: Help}
+
+def reload_cmds():
+    reload(kick)
+    reload(help)
 
 def run_command(user, channel, message):
     msg = message.split(' ')
@@ -17,7 +21,7 @@ def run_command(user, channel, message):
 
     if is_cmd:
         try:
-            result = commands[cmd].execute(user, channel, message)
+            result = commands[cmd].execute(user, channel, cmd)
         except Exception as e:
             result = 'PRIVMSG %s :Error running %s command (%s)' % (channel, cmd, e.message)
     else:
