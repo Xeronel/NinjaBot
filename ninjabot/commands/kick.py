@@ -14,7 +14,7 @@ class Kick(BaseCommand):
         # Example of how to use the command
         self.usage = 'kick <user> <reason>'
         # Groups allowed to run the command
-        self.allow = ['admin']
+        self.allow = ['*']
 
     def execute(self, user, channel, args):
         return 'PRIVMSG %s :%s' % (channel, 'Uhh..')
