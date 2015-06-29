@@ -17,6 +17,7 @@ class Kick(BaseCommand):
         self.allow = ['~', '&', '@']
 
     def execute(self, irc, user, mode, channel, args):
+        protected = ['~', '&']
         try:
             target = args[1]
         except IndexError:
@@ -26,19 +27,17 @@ class Kick(BaseCommand):
             return self.message(channel, 'Fuck off!')
 
         if self.is_allowed(mode):
-            if len(args) == 2:
-                return self.kick(channel, target)
-            elif len(args) > 2:
-                return self.kick(channel, target, ' '.join(args[2:]))
+            if mode not in protected and irc.users[target][channel] in protected:
+                return self.kick(channel, user, 'Nice try')
             else:
-                return self.message(channel, 'Usage is "%s"' % self.usage)
+                if len(args) == 2:
+                    return self.kick(channel, target)
+                elif len(args) > 2:
+                    return self.kick(channel, target, ' '.join(args[2:]))
+                else:
+                    return self.message(channel, 'Usage is "%s"' % self.usage)
         else:
             return self.denied(channel)
-
-    def protected(self):
-        protected = ['~', '&']
-        if mode not in protected and irc.users[target][channel] in protected:
-            return self.kick(channel, user, 'Nice try')
 
     @staticmethod
     def kick(channel, user, reason=''):
