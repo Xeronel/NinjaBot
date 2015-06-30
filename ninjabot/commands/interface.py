@@ -4,6 +4,7 @@ import kick
 import help
 
 
+# Instantiate command classes
 Kick = kick.Kick()
 Help = help.Help()
 
