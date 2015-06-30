@@ -19,7 +19,7 @@ def reload_cmds():
 # Command interface
 def run_command(irc, user, mode, channel, message):
     msg = message.split(' ')
-    cmd = msg[0][1:]
+    cmd = msg[0][1:].lower()
     is_cmd = True if cmd in commands else False
 
     if is_cmd:

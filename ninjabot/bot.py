@@ -2,6 +2,7 @@ __author__ = 'ripster'
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
+from collections import Iterable
 import commands as cmd
 import config
 
@@ -61,7 +62,14 @@ class IRCClient(irc.IRCClient):
                         cmd.reload_cmds()
                         reload(cmd)
             else:
-                self.sendLine(result)
+                try:
+                    if isinstance(result, Iterable):
+                        for i in result:
+                            self.sendLine(i)
+                    else:
+                        self.sendLine(result)
+                except Exception as e:
+                    self.sendLine('PRIVMSG %s :Error running %s command (%s)' % (channel, message, e.message))
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]
