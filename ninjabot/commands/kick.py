@@ -35,6 +35,7 @@ class Kick(BaseCommand):
         else:
             return self.denied(channel)
 
+    # This is broken
     def protected(self):
         protected = ['~', '&']
         if mode not in protected and irc.users[target][channel] in protected:
