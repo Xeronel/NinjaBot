@@ -8,6 +8,7 @@ import help
 Kick = kick.Kick()
 Help = help.Help()
 
+# List of commands
 commands = {Kick.trigger: Kick,
             Help.trigger: Help}
 
