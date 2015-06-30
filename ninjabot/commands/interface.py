@@ -16,6 +16,7 @@ def reload_cmds():
     reload(kick)
     reload(help)
 
+# Command interface
 def run_command(irc, user, mode, channel, message):
     msg = message.split(' ')
     cmd = msg[0][1:]
