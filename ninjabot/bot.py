@@ -3,7 +3,7 @@ __author__ = 'ripster'
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
 import commands as cmd
-from services import Services
+import services
 import config
 
 
@@ -17,13 +17,13 @@ class IRCClient(irc.IRCClient):
         self.supp_modes = cfg.modes  # Modes supported by the IRC server
         self.users = {}  # User dict organized by channel and mode
         self.cfg = cfg
-        self.services = Services(self)
+        self.services = services.Services(self)
 
     def signedOn(self):
-        # Join channels
-        for channel in self.channels:
-            self.join(channel)
-
+        """
+        Auth and join channels
+        :return: None
+        """
         # Login as oper
         if self.cfg.auth.opersrv and self.operpass != '':
             self.sendLine('oper bot %s' % self.operpass)
@@ -33,9 +33,12 @@ class IRCClient(irc.IRCClient):
             # Login with operserv
             self.msg('opersrv', 'login %s' % self.operpass)
 
+        # Join channels
+        for channel in self.channels:
+            self.join(channel)
+
     def userJoined(self, user, channel):
-        print('%s joined channel %s' % (user, channel))
-        self.getUserModes(channel)
+        print('%s joined %s' % (user, channel))
         self.services.userJoined(user, channel)
 
     def userLeft(self, user, channel):
@@ -44,7 +47,9 @@ class IRCClient(irc.IRCClient):
             del(self.users[user][channel])
 
     def modeChanged(self, user, channel, set, modes, args):
-        self.getUserModes(channel)
+        if channel[0] == '#':
+            print('%s\'s mode changed in %s' % (args[0], channel))
+            self.request_modes(channel)
 
     def privmsg(self, user, channel, message):
         user, mode = self.parse_user(user, channel)
@@ -56,28 +61,31 @@ class IRCClient(irc.IRCClient):
                                      channel=channel,
                                      message=message)
 
-            if result is None:
+            if result is False:
                 if mode in ['~', '&']:
                     if message == '!stop':
                         print('%s issued stop command.' % user.split('!')[0])
                         self.quit()
                     elif message == '!reload':
                         cmd.reload_cmds()
+                        services.reload_services()
                         reload(cmd)
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]
         if user not in self.users:
-            self.getUserModes(channel)
+            self.request_modes(channel)
         mode = self.users[user][channel]
         return user, mode
 
-    def noticed(self, user, channel, message):
-        print(user, channel, message)
-
-    def getUserModes(self, channel):
+    def request_modes(self, channel):
+        """
+        Send a request for a list of user modes from the specified channel
+        :param channel: The channel to request user modes from
+        :return: None
+        """
         # Triggers irc_RPL_NAMREPLY
-        print('Geting names for %s' % channel)
+        print('Requesting modes for %s' % channel)
         self.sendLine('names %s' % channel)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
@@ -96,10 +104,15 @@ class IRCClient(irc.IRCClient):
             if user not in self.users:
                 self.users[user] = {}
 
+            # Add the channel to the user
+            if channel not in self.users[user]:
+                self.users[user][channel] = ''
+
+            if self.users[user][channel] != mode:
+                print('Added %s%s in %s' % (mode, user, channel))
+
             # Set the channel mode
             self.users[user][channel] = mode
-
-        print('Added users for channel %s' % channel)
 
 
 class IRCFactory(protocol.ClientFactory):
