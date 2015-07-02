@@ -2,19 +2,23 @@ __author__ = 'ripster'
 
 import kick
 import help
+import stop
 
 
 # Instantiate command classes
 Kick = kick.Kick()
 Help = help.Help()
+Stop = stop.Stop()
 
 # List of commands
 commands = {Kick.trigger: Kick,
-            Help.trigger: Help}
+            Help.trigger: Help,
+            Stop.trigger: Stop}
 
 def reload_cmds():
     reload(kick)
     reload(help)
+    reload(stop)
 
 
 def run_command(irc, user, mode, channel, message):
