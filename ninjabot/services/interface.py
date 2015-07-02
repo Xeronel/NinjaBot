@@ -6,6 +6,9 @@ from greeter import Greeter
 
 greeter = Greeter()
 
+def reload_services():
+    reload(greeter)
+
 class Services:
     def __init__(self, irc):
         self.irc = irc
