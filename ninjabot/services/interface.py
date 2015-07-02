@@ -1,12 +1,13 @@
 __author__ = 'ripster'
 
-from services import service_list
-from greeter import Greeter
+import services
+import greeter
 
 
-greeter = Greeter()
+Greeter = greeter.Greeter()
 
 def reload_services():
+    reload(services)
     reload(greeter)
 
 class Services:
@@ -14,7 +15,7 @@ class Services:
         self.irc = irc
 
     def userJoined(self, user, channel):
-        for service in service_list:
+        for service in services.service_list:
             self.__send_message(service.userJoined(user, channel))
 
     def __send_message(self, message):
