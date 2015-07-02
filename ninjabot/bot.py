@@ -64,15 +64,6 @@ class IRCClient(irc.IRCClient):
                     elif message == '!reload':
                         cmd.reload_cmds()
                         reload(cmd)
-            else:
-                try:
-                    if isinstance(result, list) or isinstance(result, tuple):
-                        for i in result:
-                            self.sendLine(i)
-                    else:
-                        self.sendLine(result)
-                except Exception as e:
-                    self.sendLine('PRIVMSG %s :Error running %s command (%s)' % (channel, message, e.message))
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]

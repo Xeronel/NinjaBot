@@ -16,8 +16,16 @@ def reload_cmds():
     reload(kick)
     reload(help)
 
-# Command interface
+
 def run_command(irc, user, mode, channel, message):
+    """
+    :param irc: IRC Client
+    :param user: Executor of the command
+    :param mode: Mode of the user (~, &, @, %, *)
+    :param channel: Channel the command was run in
+    :param message: The users message
+    :return: True if command was run, else False
+    """
     msg = message.split(' ')
     cmd = msg[0][1:].lower()
     is_cmd = True if cmd in commands else False
@@ -30,4 +38,16 @@ def run_command(irc, user, mode, channel, message):
     else:
         result = None
 
-    return result
+    try:
+        if isinstance(result, list) or isinstance(result, tuple):
+            for i in result:
+                irc.sendLine(i)
+            return True
+        elif isinstance(result, str):
+            irc.sendLine(result)
+            return True
+        else:
+            return False
+    except Exception as e:
+        irc.sendLine('PRIVMSG %s :Error running %s command (%s)' % (channel, message, e.message))
+        return False
