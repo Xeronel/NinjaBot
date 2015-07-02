@@ -1,22 +1,22 @@
-__author__ = 'Harmless'
+__author__ = 'ripster'
+
+from services import service_list
+from greeter import Greeter
 
 
-__userjoined = []
-service = []
-def register_userJoined(service):
-    __userjoined.append(service)
-def notify_userJoined():
-    for service in __userjoined:
-        service.userjoined()
+greeter = Greeter()
 
-def userjoined():
-    pass
+class Services:
+    def __init__(self, irc):
+        self.irc = irc
 
-def userkicked():
-    pass
+    def userJoined(self, user, channel):
+        for service in service_list:
+            self.__send_message(service.userJoined(user, channel))
 
-def userqueued():
-    pass
-
-def useryourmom():
-    pass
+    def __send_message(self, message):
+        if isinstance(message, str):
+            self.irc.sendLine(message)
+        elif isinstance(message, list):
+            for msg in message:
+                self.irc.sendLine(msg)

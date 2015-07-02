@@ -1,1 +1,4 @@
-__author__ = 'Harmless'
+__author__ = 'ripster'
+__all__ = ['Services']
+
+from interface import Services

@@ -2,8 +2,8 @@ __author__ = 'ripster'
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
-from collections import Iterable
 import commands as cmd
+from services import Services
 import config
 
 
@@ -17,6 +17,7 @@ class IRCClient(irc.IRCClient):
         self.supp_modes = cfg.modes  # Modes supported by the IRC server
         self.users = {}  # User dict organized by channel and mode
         self.cfg = cfg
+        self.services = Services(self)
 
     def signedOn(self):
         # Join channels
@@ -35,10 +36,12 @@ class IRCClient(irc.IRCClient):
     def userJoined(self, user, channel):
         print('%s joined channel %s' % (user, channel))
         self.getUserModes(channel)
+        self.services.userJoined(user, channel)
 
     def userLeft(self, user, channel):
-        print('%s left %s' % channel)
-        del(self.users[user][channel])
+        print('%s left %s' % (user, channel))
+        if user in self.users and channel in self.users[user]:
+            del(self.users[user][channel])
 
     def modeChanged(self, user, channel, set, modes, args):
         self.getUserModes(channel)
@@ -63,7 +66,7 @@ class IRCClient(irc.IRCClient):
                         reload(cmd)
             else:
                 try:
-                    if isinstance(result, Iterable):
+                    if isinstance(result, list) or isinstance(result, tuple):
                         for i in result:
                             self.sendLine(i)
                     else:
@@ -105,7 +108,7 @@ class IRCClient(irc.IRCClient):
             # Set the channel mode
             self.users[user][channel] = mode
 
-        print(self.users)
+        print('Added users for channel %s' % channel)
 
 
 class IRCFactory(protocol.ClientFactory):
