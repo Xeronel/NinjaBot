@@ -62,14 +62,11 @@ class IRCClient(irc.IRCClient):
                                      message=message)
 
             if result is False:
-                if mode in ['~', '&']:
-                    if message == '!stop':
-                        print('%s issued stop command.' % user.split('!')[0])
-                        self.quit()
-                    elif message == '!reload':
-                        cmd.reload_cmds()
-                        services.reload_services()
-                        reload(cmd)
+                if message == '!reload':
+                    cmd.reload_cmds()
+                    reload(cmd)
+                    services.reload_services()
+                    reload(services)
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]
