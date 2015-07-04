@@ -2,8 +2,7 @@ __author__ = 'ripster'
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
-import commands as cmd
-import service
+import bot
 import config
 
 
@@ -17,7 +16,7 @@ class IRCClient(irc.IRCClient):
         self.supp_modes = cfg.modes  # Modes supported by the IRC server
         self.users = {}  # User dict organized by channel and mode
         self.cfg = cfg
-        self.services = service.Services(self)
+        self.bot = bot.EventHandler(self)
 
     def signedOn(self):
         """
@@ -38,13 +37,13 @@ class IRCClient(irc.IRCClient):
             self.join(channel)
 
     def userJoined(self, user, channel):
-        print('%s joined %s' % (user, channel))
-        self.services.userJoined(user, channel)
+        self.bot.userJoined(user, channel)
 
     def userLeft(self, user, channel):
-        print('%s left %s' % (user, channel))
         if user in self.users and channel in self.users[user]:
             del(self.users[user][channel])
+
+        self.bot.userLeft(user, channel)
 
     def modeChanged(self, user, channel, set, modes, args):
         if channel[0] == '#':
@@ -52,11 +51,11 @@ class IRCClient(irc.IRCClient):
             self.request_modes(channel)
 
     def privmsg(self, user, channel, message):
-        self.services.privmsg(user, channel, message)
+        self.bot.privmsg(user, channel, message)
         user, mode = self.parse_user(user, channel)
 
         if message.startswith('!'):
-            result = cmd.run_command(irc=self,
+            result = bot.run_command(irc=self,
                                      user=user,
                                      mode=mode,
                                      channel=channel,
@@ -64,10 +63,9 @@ class IRCClient(irc.IRCClient):
 
             if result is False:
                 if message == '!reload':
-                    cmd.reload_cmds()
-                    reload(cmd)
-                    service.reload_services()
-                    reload(service)
+                    bot.reload_cmds()
+                    bot.reload_services()
+                    reload(bot)
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]
@@ -144,3 +142,7 @@ def run():
                            irc_cfg.network.port,
                            IRCFactory(irc_cfg))
     reactor.run()
+
+
+if __name__ == '__main__':
+    run()
