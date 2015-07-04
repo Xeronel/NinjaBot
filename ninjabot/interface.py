@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from events import listeners, BaseEvents
+from types import listeners, BaseEvents
 from ninjabot import services, commands
 
 

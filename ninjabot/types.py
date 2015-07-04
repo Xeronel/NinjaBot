@@ -20,7 +20,7 @@ class BaseEvents(object):
         pass
 
 
-class Event(BaseEvents):
+class BaseEvent(BaseEvents):
     def __init__(self, irc):
         BaseEvents.__init__(self, irc)
         listeners.append(self)
@@ -30,9 +30,9 @@ class Event(BaseEvents):
         return 'PRIVMSG %s :%s' % (channel, message)
 
 
-class BaseCommand(Event):
+class BaseCommand(BaseEvent):
     def __init__(self, irc):
-        Event.__init__(self, irc)
+        BaseEvent.__init__(self, irc)
 
         # Word that causes the command to run
         self.trigger = ''

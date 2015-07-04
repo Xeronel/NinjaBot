@@ -1,11 +1,11 @@
 __author__ = 'ripster'
 
-from ninjabot.events import Event
+from ninjabot.types import BaseEvent
 
 
-class Greeter(Event):
+class Greeter(BaseEvent):
     def __init__(self, irc):
-        Event.__init__(self, irc)
+        BaseEvent.__init__(self, irc)
 
     def userJoined(self, user, channel):
         if channel == '#help':

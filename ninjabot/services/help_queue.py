@@ -1,11 +1,11 @@
 __author__ = 'ripster'
 
-from ninjabot.events import Event
+from ninjabot.types import BaseEvent
 
 
-class HelpQueue(Event):
+class HelpQueue(BaseEvent):
     def __init__(self, irc):
-        Event.__init__(self, irc)
+        BaseEvent.__init__(self, irc)
         self.excluded_modes = ['~', '&', '@', '%']
         self.user_queue = []
 
