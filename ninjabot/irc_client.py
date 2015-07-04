@@ -3,7 +3,7 @@ __author__ = 'ripster'
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
 import commands as cmd
-import services
+import service
 import config
 
 
@@ -17,7 +17,7 @@ class IRCClient(irc.IRCClient):
         self.supp_modes = cfg.modes  # Modes supported by the IRC server
         self.users = {}  # User dict organized by channel and mode
         self.cfg = cfg
-        self.services = services.Services(self)
+        self.services = service.Services(self)
 
     def signedOn(self):
         """
@@ -52,6 +52,7 @@ class IRCClient(irc.IRCClient):
             self.request_modes(channel)
 
     def privmsg(self, user, channel, message):
+        self.services.privmsg(user, channel, message)
         user, mode = self.parse_user(user, channel)
 
         if message.startswith('!'):
@@ -65,8 +66,8 @@ class IRCClient(irc.IRCClient):
                 if message == '!reload':
                     cmd.reload_cmds()
                     reload(cmd)
-                    services.reload_services()
-                    reload(services)
+                    service.reload_services()
+                    reload(service)
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]

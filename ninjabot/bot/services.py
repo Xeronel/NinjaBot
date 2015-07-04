@@ -1,7 +1,39 @@
 __author__ = 'ripster'
 
-class BaseCommand(object):
-    def __init__(self):
+
+services = []
+commands = {}
+
+class BaseEvents(object):
+    def __init__(self, irc):
+        # IRC Client
+        self.irc = irc
+        services.append(self)
+
+    def userJoined(self, user, channel):
+        pass
+
+    def userLeft(self, user, channel):
+        pass
+
+    def privmsg(self, user, channel, message):
+        pass
+
+    def noticed(self, user, channel, message):
+        pass
+
+    def modeChanged(self, user, channel, set, modes, args):
+        pass
+
+    @staticmethod
+    def message(channel, message):
+        return 'PRIVMSG %s :%s' % (channel, message)
+
+
+class BaseCommand(BaseEvents):
+    def __init__(self, irc):
+        BaseEvents.__init__(self, irc)
+
         # Word that causes the command to run
         self.trigger = ''
         # Command description

@@ -1,8 +1,39 @@
 __author__ = 'ripster'
 
+import services
+import greeter
+import help_queue
 import kick
 import help
 import stop
+
+
+def reload_services():
+    reload(services)
+    reload(greeter)
+    reload(help_queue)
+
+
+class Services:
+    def __init__(self, irc):
+        self.irc = irc
+        self.Greeter = greeter.Greeter(irc)
+        self.HelpQueue = help_queue.HelpQueue(irc)
+
+    def userJoined(self, user, channel):
+        for service in services.service_list:
+            self.__send_message(service.userJoined(user, channel))
+
+    def privmsg(self, user, channel, message):
+        for service in services.service_list:
+            self.__send_message(service.privmsg(user, channel, message))
+
+    def __send_message(self, message):
+        if isinstance(message, str):
+            self.irc.sendLine(message)
+        elif isinstance(message, list):
+            for msg in message:
+                self.irc.sendLine(msg)
 
 
 # Instantiate command classes

@@ -1,7 +1,7 @@
 __author__ = 'ripster'
 
-from ninjabot import bot
+from ninjabot import irc_client
 
 
 # Start IRC client
-bot.run()
+irc_client.run()

@@ -4,8 +4,8 @@ from services import BaseServices
 
 
 class Greeter(BaseServices):
-    def __init__(self):
-        BaseServices.__init__(self)
+    def __init__(self, irc):
+        BaseServices.__init__(self, irc)
 
     def userJoined(self, user, channel):
         if channel == '#help':
