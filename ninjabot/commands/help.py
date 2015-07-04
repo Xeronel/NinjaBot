@@ -1,11 +1,11 @@
 __author__ = 'ripster'
 
-from services import BaseCommand
+from ninjabot.events import BaseCommand
 
 
 class Help(BaseCommand):
-    def __init__(self):
-        BaseCommand.__init__(self)
+    def __init__(self, irc):
+        BaseCommand.__init__(self, irc)
 
         # Word that causes the command to run
         self.trigger = 'help'
@@ -16,7 +16,7 @@ class Help(BaseCommand):
         # Groups allowed to run the command
         self.allow = ['*']
 
-    def execute(self, irc, user, mode, channel, args):
+    def execute(self, user, mode, channel, args):
         if mode == '~' and len(args) == 2:
             result = self.move(args[1])
         else:

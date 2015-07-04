@@ -1,26 +1,22 @@
 __author__ = 'ripster'
 
-from ninjabot import __commands__, __services__
-from services import BaseEvents, listeners
-import greeter
-import help_queue
-import kick
-import help
-import stop
-
-
-def reload_services():
-    reload(services)
-    reload(greeter)
-    reload(help_queue)
+from events import listeners, BaseEvents
+from ninjabot import services, commands
 
 
 class EventHandler(BaseEvents):
     def __init__(self, irc):
         BaseEvents.__init__(self, irc)
+        self.commands = {}
 
-        self.Greeter = greeter.Greeter(irc)
-        self.HelpQueue = help_queue.HelpQueue(irc)
+        # Load commands into a dictionary
+        for cls in commands.__dict__.items():
+            if isinstance(cls[1], type):
+                cmd = cls[1](irc)
+                self.commands[cmd.trigger] = cmd
+
+        # Load services into a list
+        self.services = [service[1](irc) for service in services.__dict__.items() if isinstance(service[1], type)]
 
     def userJoined(self, user, channel):
         for service in listeners:
@@ -36,22 +32,6 @@ class EventHandler(BaseEvents):
         elif isinstance(message, list):
             for msg in message:
                 self.irc.sendLine(msg)
-
-
-# Instantiate command classes
-Kick = kick.Kick()
-Help = help.Help()
-Stop = stop.Stop()
-
-# List of commands
-commands = {Kick.trigger: Kick,
-            Help.trigger: Help,
-            Stop.trigger: Stop}
-
-def reload_cmds():
-    reload(kick)
-    reload(help)
-    reload(stop)
 
 
 def run_command(user, mode, channel, message):

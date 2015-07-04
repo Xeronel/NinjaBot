@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from services import BaseCommand
+from ninjabot.events import BaseCommand
 
 class Stop(BaseCommand):
     def __init__(self, irc):
@@ -9,7 +9,7 @@ class Stop(BaseCommand):
         # Word that causes the command to run
         self.trigger = 'stop'
         # Command description
-        self.help = 'Stop the bot'
+        self.help = 'Stop the ninjabot'
         # Example of how to use the command
         self.usage = '!stop'
         # Groups allowed to run the command

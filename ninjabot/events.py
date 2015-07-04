@@ -20,7 +20,7 @@ class BaseEvents(object):
         pass
 
 
-class Events(BaseEvents):
+class Event(BaseEvents):
     def __init__(self, irc):
         BaseEvents.__init__(self, irc)
         listeners.append(self)
@@ -30,9 +30,9 @@ class Events(BaseEvents):
         return 'PRIVMSG %s :%s' % (channel, message)
 
 
-class BaseCommand(Events):
+class BaseCommand(Event):
     def __init__(self, irc):
-        Events.__init__(self, irc)
+        Event.__init__(self, irc)
 
         # Word that causes the command to run
         self.trigger = ''
@@ -43,7 +43,7 @@ class BaseCommand(Events):
         # Groups allowed to run the command
         self.allow = []
 
-    def execute(self, irc, user, mode, channel, args):
+    def execute(self, user, mode, channel, args):
         pass
 
     def is_allowed(self, mode):

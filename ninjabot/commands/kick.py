@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from services import BaseCommand
+from ninjabot.events import BaseCommand
 
 
 class Kick(BaseCommand):
@@ -16,18 +16,18 @@ class Kick(BaseCommand):
         # Groups allowed to run the command
         self.allow = ['~', '&', '@']
 
-    def execute(self, irc, user, mode, channel, args):
+    def execute(self, user, mode, channel, args):
         protected = ['~', '&']
         try:
             target = args[1]
         except IndexError:
             target = ''
 
-        if target == irc.nickname:
+        if target == self.irc.nickname:
             return self.message(channel, 'Fuck off!')
 
         if self.is_allowed(mode):
-            if mode not in protected and irc.users[target][channel] in protected:
+            if mode not in protected and self.irc.users[target][channel] in protected:
                 return self.kick(channel, user, 'Nice try')
             else:
                 if len(args) == 2:

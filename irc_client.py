@@ -2,7 +2,7 @@ __author__ = 'ripster'
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
-import bot
+import ninjabot
 import config
 
 
@@ -16,7 +16,7 @@ class IRCClient(irc.IRCClient):
         self.supp_modes = cfg.modes  # Modes supported by the IRC server
         self.users = {}  # User dict organized by channel and mode
         self.cfg = cfg
-        self.bot = bot.EventHandler(self)
+        self.bot = ninjabot.EventHandler(self)
 
     def signedOn(self):
         """
@@ -55,17 +55,17 @@ class IRCClient(irc.IRCClient):
         user, mode = self.parse_user(user, channel)
 
         if message.startswith('!'):
-            result = bot.run_command(irc=self,
-                                     user=user,
-                                     mode=mode,
-                                     channel=channel,
-                                     message=message)
+            result = ninjabot.run_command(irc=self,
+                                          user=user,
+                                          mode=mode,
+                                          channel=channel,
+                                          message=message)
 
             if result is False:
                 if message == '!reload':
-                    bot.reload_cmds()
-                    bot.reload_services()
-                    reload(bot)
+                    ninjabot.reload_cmds()
+                    ninjabot.reload_services()
+                    reload(ninjabot)
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]
