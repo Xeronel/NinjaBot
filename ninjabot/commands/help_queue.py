@@ -1,11 +1,19 @@
 __author__ = 'ripster'
 
-from ninjabot.types import BaseEvent
+from ninjabot.types import BaseCommand
 
 
-class HelpQueue(BaseEvent):
+class HelpQueue(BaseCommand):
     def __init__(self, irc):
-        BaseEvent.__init__(self, irc)
+        BaseCommand.__init__(self, irc)
+        # Word that causes the command to run
+        self.trigger = '!next'
+        # Groups allowed to run the command
+        self.allow = ['~', '&', '@', '%']
+        # Command description
+        self.help = 'Retrieves the next user in the queue'
+        # Example of how to use the command
+        self.usage = '!next'
         self.excluded_modes = ['~', '&', '@', '%']
         self.user_queue = []
 
