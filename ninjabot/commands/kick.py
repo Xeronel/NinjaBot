@@ -15,9 +15,10 @@ class Kick(BaseCommand):
         self.usage = 'kick <user> <reason>'
         # Groups allowed to run the command
         self.allow = ['~', '&', '@']
+        # Protected groups
+        self.protected = ['~', '&']
 
-    def execute(self, user, mode, channel, args):
-        protected = ['~', '&']
+    def execute(self, user, mode, channel, *args):
         try:
             target = args[1]
         except IndexError:
@@ -27,7 +28,8 @@ class Kick(BaseCommand):
             return self.message(channel, 'Fuck off!')
 
         if self.is_allowed(mode):
-            if mode not in protected and self.irc.users[target][channel] in protected:
+            if mode not in self.protected and \
+            self.irc.users[target][channel] in self.protected:
                 return self.kick(channel, user, 'Nice try')
             else:
                 if len(args) == 2:
