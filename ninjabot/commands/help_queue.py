@@ -19,8 +19,9 @@ class Next(BaseCommand):
 
     def execute(self, user, mode, channel, args):
         if self.is_allowed(mode):
-            target = help_queue.pop()
-            return self.irc.mode(channel, True, 'v', user=target)
+            if len(help_queue) > 0:
+                target = help_queue.pop()
+                self.irc.mode(channel, True, 'v', user=target)
 
 
 class List(BaseCommand):
