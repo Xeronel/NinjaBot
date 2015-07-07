@@ -22,6 +22,16 @@ class EventHandler(BaseEvents):
         for service in self.services:
             self.__send_message(service.userJoined(user, channel))
 
+        for command in self.commands:
+            self.__send_message(self.commands[command].userJoined(user, channel))
+
+    def userLeft(self, user, channel):
+        for service in self.services:
+            self.__send_message(service.userLeft(user, channel))
+
+        for command in self.commands:
+            self.__send_message(self.commands[command].userLeft(user, channel))
+
     def privmsg(self, user, channel, message):
         # Get the first word without the first character
         trigger = message.partition(' ')[0][1:]
