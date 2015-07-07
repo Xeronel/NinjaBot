@@ -30,6 +30,10 @@ class EventHandler(BaseEvent):
         # Get the first word without the first character
         trigger = message.partition(' ')[0][1:]
 
+        if trigger == 'loaded':
+            self.__send_message(self.message(channel, str(self.services)))
+            self.__send_message(self.message(channel, str(self.commands)))
+
         for service in self.services:
             self.__send_message(service.privmsg(user, channel, message))
 

@@ -13,7 +13,6 @@ class BaseEvent(object):
     def message(channel, message):
         return 'PRIVMSG %s :%s' % (channel, message)
 
-
 class BaseService(BaseEvent):
     def __init__(self, irc):
         BaseEvent.__init__(self, irc)

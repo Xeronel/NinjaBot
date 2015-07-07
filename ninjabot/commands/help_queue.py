@@ -8,7 +8,7 @@ class Next(BaseCommand):
     def __init__(self, irc):
         BaseCommand.__init__(self, irc)
         # Word that causes the command to run
-        self.trigger = '!next'
+        self.trigger = 'next'
         # Groups allowed to run the command
         self.allow = ['~', '&', '@', '%']
         # Command description
@@ -18,27 +18,16 @@ class Next(BaseCommand):
         self.protected = ['~', '&', '@', '%']
 
     def execute(self, user, mode, channel, args):
-        pass
-
-    def userLeft(self, user, channel):
-        if user in help_queue:
-            del(help_queue[user])
-
-    def privmsg(self, user, channel, message):
-        print(message)
-
-    def nextUser(self, user, channel):
-        help_queue.pop()
-
-    def showQueue(self):
-        return len(help_queue)
+        if self.is_allowed(mode):
+            target = help_queue.pop()
+            return self.irc.mode(channel, True, 'v', user=target)
 
 
 class List(BaseCommand):
     def __init__(self, irc):
         BaseCommand.__init__(self, irc)
         # Word that causes the command to run
-        self.trigger = '!list'
+        self.trigger = 'list'
         # Groups allowed to run the command
         self.allow = ['~', '&', '@', '%']
         # Command description
@@ -54,7 +43,7 @@ class Clear(BaseCommand):
     def __init__(self, irc):
         BaseCommand.__init__(self, irc)
         # Word that causes the command to run
-        self.trigger = '!clear'
+        self.trigger = 'clear'
         # Groups allowed to run the command
         self.allow = ['~', '&', '@', '%']
         # Command description
