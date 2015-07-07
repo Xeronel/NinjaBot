@@ -52,20 +52,6 @@ class IRCClient(irc.IRCClient):
 
     def privmsg(self, user, channel, message):
         self.bot.privmsg(user, channel, message)
-        user, mode = self.parse_user(user, channel)
-
-        if message.startswith('!'):
-            result = ninjabot.run_command(irc=self,
-                                          user=user,
-                                          mode=mode,
-                                          channel=channel,
-                                          message=message)
-
-            if result is False:
-                if message == '!reload':
-                    ninjabot.reload_cmds()
-                    ninjabot.reload_services()
-                    reload(ninjabot)
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]

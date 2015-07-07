@@ -1,7 +1,5 @@
 __author__ = 'ripster'
 
-listeners = []
-commands = []
 
 class BaseEvents(object):
     def __init__(self, irc):
@@ -23,7 +21,11 @@ class BaseEvents(object):
 class BaseEvent(BaseEvents):
     def __init__(self, irc):
         BaseEvents.__init__(self, irc)
-        listeners.append(self)
+
+        # Modes protected from the command/service
+        self.protected = []
+        # Command/Service description
+        self.help = ''
 
     @staticmethod
     def message(channel, message):
@@ -36,15 +38,18 @@ class BaseCommand(BaseEvent):
 
         # Word that causes the command to run
         self.trigger = ''
-        # Command description
-        self.help = ''
         # Example of how to use the command
         self.usage = ''
         # Groups allowed to run the command
         self.allow = []
 
-    def execute(self, user, mode, channel, args):
+    def execute(self, user, mode, channel, message):
         pass
+
+    def privmsg(self, user, channel, message):
+        message = message.split(' ')
+        user, mode = self.irc.parse_user(user, channel)
+        return self.execute(user, mode, channel, message)
 
     def is_allowed(self, mode):
         if '*' in self.allow:

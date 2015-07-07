@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from types import listeners, BaseEvents
+from types import BaseEvents
 from ninjabot import services, commands
 
 
@@ -19,12 +19,19 @@ class EventHandler(BaseEvents):
         self.services = [service[1](irc) for service in services.__dict__.items() if isinstance(service[1], type)]
 
     def userJoined(self, user, channel):
-        for service in listeners:
+        for service in self.services:
             self.__send_message(service.userJoined(user, channel))
 
     def privmsg(self, user, channel, message):
-        for service in listeners:
+        # Get the first word without the first character
+        trigger = message.partition(' ')[0][1:]
+
+        for service in self.services:
             self.__send_message(service.privmsg(user, channel, message))
+
+        for command in self.commands:
+            if trigger == command:
+                self.__send_message(self.commands[command].privmsg(user, channel, message))
 
     def __send_message(self, message):
         if isinstance(message, str):
