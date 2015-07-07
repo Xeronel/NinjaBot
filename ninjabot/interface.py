@@ -43,6 +43,10 @@ class EventHandler(BaseEvents):
             if trigger == command:
                 self.__send_message(self.commands[command].privmsg(user, channel, message))
 
+    def noticed(self, user, channel, message):
+        for service in self.services:
+            self.__send_message(service.noticed(user, channel, message))
+
     def __send_message(self, message):
         if isinstance(message, str):
             self.irc.sendLine(message)
