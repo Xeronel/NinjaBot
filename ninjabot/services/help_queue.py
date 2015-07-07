@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from ninjabot.types import BaseCommand, BaseEvent
+from ninjabot.types import BaseCommand, BaseService
 
 
 help_queue = []
@@ -67,9 +67,9 @@ class Next(BaseCommand):
         return len(help_queue)
 
 
-class HelpQueue(BaseEvent):
+class HelpQueue(BaseService):
     def __init__(self, irc):
-        BaseEvent.__init__(self, irc)
+        BaseService.__init__(self, irc)
         # Service description
         self.help = 'Adds a user to the help queue when they join #help'
         # Modes protected from the service

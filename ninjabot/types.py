@@ -1,27 +1,9 @@
 __author__ = 'ripster'
 
 
-class BaseEvents(object):
+class BaseEvent(object):
     def __init__(self, irc):
         self.irc = irc
-
-    def userJoined(self, user, channel):
-        pass
-
-    def userLeft(self, user, channel):
-        pass
-
-    def privmsg(self, user, channel, message):
-        pass
-
-    def noticed(self, user, channel, message):
-        pass
-
-
-class BaseEvent(BaseEvents):
-    def __init__(self, irc):
-        BaseEvents.__init__(self, irc)
-
         # Modes protected from the command/service
         self.protected = []
         # Command/Service description
@@ -32,10 +14,26 @@ class BaseEvent(BaseEvents):
         return 'PRIVMSG %s :%s' % (channel, message)
 
 
-class BaseCommand(BaseEvent):
+class BaseService(BaseEvent):
     def __init__(self, irc):
         BaseEvent.__init__(self, irc)
 
+    def privmsg(self, user, channel, message):
+        pass
+
+    def userJoined(self, user, channel):
+        pass
+
+    def userLeft(self, user, channel):
+        pass
+
+    def noticed(self, user, channel, message):
+        pass
+
+
+class BaseCommand(BaseEvent):
+    def __init__(self, irc):
+        BaseEvent.__init__(self, irc)
         # Word that causes the command to run
         self.trigger = ''
         # Example of how to use the command
