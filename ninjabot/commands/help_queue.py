@@ -39,7 +39,7 @@ class List(BaseCommand):
     def execute(self, user, mode, channel, args):
         if len(help_queue) > 0:
             self.irc.msg(channel, ' '.join(['%s. %s' % (x + 1, y)
-                                            for x, y in zip(range(len(help_queue)), help_queue)]))
+                                            for x, y in enumerate(help_queue)]))
         else:
             self.irc.msg(channel, 'The queue is empty.')
 
