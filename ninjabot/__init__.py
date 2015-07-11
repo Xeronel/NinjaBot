@@ -1,4 +1,10 @@
 __author__ = 'ripster'
-__all__ = ['EventHandler', 'reload_services', 'run_command', 'reload_cmds']
+__all__ = ['EventHandler']
 
+import interface
 from interface import EventHandler
+
+
+def reload_package():
+    interface.reload_all()
+    reload(interface)

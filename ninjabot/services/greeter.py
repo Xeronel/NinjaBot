@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from ninjabot.types import BaseService
+from ninjabot.basetypes import BaseService
 
 
 class Greeter(BaseService):

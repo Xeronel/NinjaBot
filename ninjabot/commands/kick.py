@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from ninjabot.types import BaseCommand
+from ninjabot.basetypes import BaseCommand
 
 
 class Kick(BaseCommand):

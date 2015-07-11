@@ -4,6 +4,7 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
 import ninjabot
 import config
+import types
 
 
 class IRCClient(irc.IRCClient):
@@ -51,6 +52,13 @@ class IRCClient(irc.IRCClient):
             self.request_modes(channel)
 
     def privmsg(self, user, channel, message):
+        user, mode = self.parse_user(user, channel)
+        if message == '!reload' and mode in ('~', '&'):
+            ninjabot.reload_package()
+            reload(ninjabot)
+            self.bot = ninjabot.EventHandler(self)
+            self.say(channel, 'Successfully reloaded!')
+
         self.bot.privmsg(user, channel, message)
 
     def parse_user(self, user, channel):

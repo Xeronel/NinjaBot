@@ -1,12 +1,13 @@
 __author__ = 'ripster'
 
-from types import BaseEvent
+from basetypes import BaseEvent
 from ninjabot import services, commands
 
 
 class EventHandler(BaseEvent):
     def __init__(self, irc):
         BaseEvent.__init__(self, irc)
+        print('Initializing Event Handler')
         self.commands = {}
 
         # Load commands into a dictionary
@@ -51,3 +52,9 @@ class EventHandler(BaseEvent):
         elif isinstance(message, list):
             for msg in message:
                 self.irc.sendLine(msg)
+
+def reload_all():
+    services.reload_services()
+    commands.reload_commands()
+    reload(services)
+    reload(commands)
