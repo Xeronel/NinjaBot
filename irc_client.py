@@ -4,7 +4,6 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, ssl
 import ninjabot
 import config
-import types
 
 
 class IRCClient(irc.IRCClient):
