@@ -24,10 +24,12 @@ class Kick(BaseCommand):
         except IndexError:
             target = ''
 
+        # Don't let the bot kick itself
         if target == self.irc.nickname:
             return self.message(channel, 'Fuck off!')
 
         if self.is_allowed(mode):
+            # Prevent protected users modes from being kicked
             if mode not in self.protected and \
             self.irc.users[target][channel] in self.protected:
                 return self.kick(channel, user, 'Nice try')
