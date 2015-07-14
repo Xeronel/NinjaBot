@@ -65,6 +65,7 @@ class IRCClient(irc.IRCClient):
         try:
             mode = self.users[user][channel]
         except KeyError:
+            print('User %s not found in %s' % (user, channel))
             mode = ''
         return user, mode
 
