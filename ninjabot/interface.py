@@ -38,9 +38,8 @@ class EventHandler(BaseEvent):
         for service in self.services:
             self.__send_message(service.privmsg(user, channel, message))
 
-        for command in self.commands:
-            if trigger == command:
-                self.__send_message(self.commands[command].privmsg(user, channel, message))
+        if trigger in self.commands:
+            self.__send_message(self.commands[trigger].privmsg(user, channel, message))
 
     def noticed(self, user, channel, message):
         for service in self.services:
