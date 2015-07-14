@@ -1,6 +1,6 @@
 __author__ = 'ripster'
 
-from ninjabot.basetypes import BaseCommand, BaseService
+from ninjabot.basetypes import BaseService
 
 help_queue = []
 
