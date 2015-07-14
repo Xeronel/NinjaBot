@@ -3,13 +3,19 @@ __all__ = ['Help', 'Kick', 'Stop']
 
 
 import help
-import kick
-import stop
-import help_queue
 from help import Help
+
+import kick
 from kick import Kick
+
+import stop
 from stop import Stop
+
+import help_queue
 from help_queue import Clear, List, Next
+
+import users
+from users import Users
 
 
 def reload_commands():
@@ -17,3 +23,4 @@ def reload_commands():
     reload(kick)
     reload(stop)
     reload(help_queue)
+    reload(users)
