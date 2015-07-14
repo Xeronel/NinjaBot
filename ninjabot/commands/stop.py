@@ -2,6 +2,7 @@ __author__ = 'ripster'
 
 from ninjabot.basetypes import BaseCommand
 
+
 class Stop(BaseCommand):
     def __init__(self, irc):
         # Initialize Base
