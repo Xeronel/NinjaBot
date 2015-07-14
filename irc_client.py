@@ -62,9 +62,10 @@ class IRCClient(irc.IRCClient):
 
     def parse_user(self, user, channel):
         user = user.partition('!')[0]
-        if user not in self.users:
-            self.request_modes(channel)
-        mode = self.users[user][channel]
+        try:
+            mode = self.users[user][channel]
+        except KeyError:
+            mode = ''
         return user, mode
 
     def request_modes(self, channel):
