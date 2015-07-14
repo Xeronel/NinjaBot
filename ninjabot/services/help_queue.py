@@ -2,8 +2,8 @@ __author__ = 'ripster'
 
 from ninjabot.basetypes import BaseCommand, BaseService
 
-
 help_queue = []
+
 
 class HelpQueue(BaseService):
     def __init__(self, irc):
@@ -28,5 +28,4 @@ class HelpQueue(BaseService):
         if mode not in self.protected:
             if user in help_queue:
                 help_queue.remove(user)
-                print('Removed %s from queue')
-                print(help_queue)
+                print('Removed %s from queue' % user)
