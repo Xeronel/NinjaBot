@@ -53,6 +53,7 @@ class EventHandler(BaseEvent):
             for msg in message:
                 self.irc.sendLine(msg)
 
+
 def reload_all():
     services.reload_services()
     commands.reload_commands()
